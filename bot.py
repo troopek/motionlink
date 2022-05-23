@@ -12,12 +12,14 @@ import random
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-# initialize colors
+# style stuff
 pri = '\033[0;0m'  # reset color
 sec = '\033[1;34m'  # secondary color
 acc = '\033[1;36m'  # accent color
 
-# clear screen function
+# guild ids
+guild_cmg = 976586132391338054
+guild_test = 978353904339288064
 
 
 def cls():
@@ -25,8 +27,17 @@ def cls():
 
 
 # initialize bot
-bot = commands.Bot(command_prefix=(), intents=discord.Intents(
-    messages=True, guilds=True))
+class Bot(commands.Bot):
+    async def setup_hook(self):
+        await bot.add_cog(Events(bot))  # Events
+        await bot.add_cog(test(bot))    # test
+        tree = self.tree
+        # await tree.sync(guild=discord.Object(976586132391338054))
+        await tree.sync()
+
+
+bot = Bot(command_prefix=(), intents=discord.Intents(
+    messages=True, guilds=True), application_id="977995844097802240")
 
 
 # create event cog
@@ -35,12 +46,13 @@ class Events(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_ready():
+    async def on_ready(self):
         print(f"""{pri}MotionLink is connected to:""")
         print(f"""----------------------------------------------------""", end=' ')
-        guild = discord.utils.get(bot.guilds)
-        print(f"""\n{sec}{guild.name} {acc}[{guild.id}]""")
-        print(f"""{pri}----------------------------------------------------""")
+        # guild = discord.utils.get(bot.guilds)
+        for guild in bot.guilds:
+            print(f"""\n{sec}{guild.name} {acc}[{guild.id}]""", end=' ')
+        print(f"""\n{pri}----------------------------------------------------""")
 
 
 # create command cogs
@@ -51,8 +63,7 @@ class test(commands.Cog):
     @commands.hybrid_command(name="ping")
     async def ping_command(self, ctx: commands.Context) -> None:
         """
-        This command is actually used as an app command AND a message command.
-        This means it is invoked with `?ping` and `/ping` (once synced, of course).
+        This command is actuallyfg used as an app command AND
         """
 
         await ctx.send("Hello!")
@@ -62,25 +73,25 @@ class test(commands.Cog):
     @commands.hybrid_group(name="parent")
     async def parent_command(self, ctx: commands.Context) -> None:
         """
-        We even have the use of parents. This will work as usual for ext.commands but will be un-invokable for app commands.
-        This is a discord limitation as groups are un-invokable.
+        We even have the use of parents. This will work as us
         """
         ...   # nothing we want to do in here, I guess!
 
     @parent_command.command(name="sub")
     async def sub_command(self, ctx: commands.Context, argument: str) -> None:
         """
-        This subcommand can now be invoked with `?parent sub <arg>` or `/parent sub <arg>` (once synced).
+        This subcommand can now be invoked 
         """
 
         await ctx.send(f"Hello, you sent {argument}!")
 
+    @app_commands.command(name="command-1")
+    async def my_command(self, interaction: discord.Interaction) -> None:
+        """ djgasd ghasgd hasgd hagsd hags dhgas """
+        await interaction.response.send_message("Hello from command 1!", ephemeral=True)
 
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(Events(bot))  # Events
-    await bot.add_cog(test(bot))   # test
 
-
+# run the bot
 bot.run(TOKEN)
 
 
