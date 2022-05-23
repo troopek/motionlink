@@ -18,8 +18,8 @@ sec = '\033[1;34m'  # secondary color
 acc = '\033[1;36m'  # accent color
 
 # guild ids
-guild_cmg = 976586132391338054
-guild_test = 978353904339288064
+guild_cmg = discord.Object(976586132391338054)
+guild_test = discord.Object(978353904339288064)
 
 
 def cls():
@@ -35,6 +35,9 @@ class Bot(commands.Bot):
         # await tree.sync(guild=discord.Object(976586132391338054))
         await tree.sync()
 
+        tree.copy_global_to(guild=guild_test)
+        await tree.sync(guild=guild_test)
+
 
 bot = Bot(command_prefix=(), intents=discord.Intents(
     messages=True, guilds=True), application_id="977995844097802240")
@@ -47,7 +50,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"""{pri}MotionLink is connected to:""")
+        print(f"""\n{pri}MotionLink is connected to:""")
         print(f"""----------------------------------------------------""", end=' ')
         # guild = discord.utils.get(bot.guilds)
         for guild in bot.guilds:
