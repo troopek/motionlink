@@ -10,13 +10,14 @@ import random
 
 # initialize token
 load_dotenv()
-
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # initialize colors
 pri = '\033[0;0m'  # reset color
 sec = '\033[1;34m'  # secondary color
 acc = '\033[1;36m'  # accent color
+
+# clear screen function
 
 
 def cls():
@@ -28,6 +29,21 @@ bot = commands.Bot(command_prefix=(), intents=discord.Intents(
     messages=True, guilds=True))
 
 
+# create event cog
+class Events(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready():
+        print(f"""{pri}MotionLink is connected to:""")
+        print(f"""----------------------------------------------------""", end=' ')
+        guild = discord.utils.get(bot.guilds)
+        print(f"""\n{sec}{guild.name} {acc}[{guild.id}]""")
+        print(f"""{pri}----------------------------------------------------""")
+
+
+# create command cogs
 class test(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
@@ -61,7 +77,8 @@ class test(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(test(bot))
+    await bot.add_cog(Events(bot))  # Events
+    await bot.add_cog(test(bot))   # test
 
 
 bot.run(TOKEN)
