@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from discord import app_commands
 from discord.ext import commands
 import discord
+import typing
 
 # import other neccesary libraies
 import random
@@ -22,10 +23,6 @@ guild_cmg = discord.Object(976586132391338054)
 guild_test = discord.Object(978353904339288064)
 
 
-def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
 # initialize bot
 class Bot(commands.Bot):
     async def setup_hook(self):
@@ -39,8 +36,12 @@ class Bot(commands.Bot):
         await tree.sync(guild=guild_test)
 
 
-bot = Bot(command_prefix=(), intents=discord.Intents(
-    messages=True, guilds=True), application_id="977995844097802240")
+intents = discord.Intents.default()
+intents.message_content = True
+intents.messages = True
+intents.guilds = True
+bot = Bot(command_prefix=('!'), intents=intents,
+          application_id="977995844097802240")
 
 
 # create event cog
@@ -58,12 +59,36 @@ class Events(commands.Cog):
         print(f"""\n{pri}----------------------------------------------------""")
 
 
+# create sync cogs
+class Sync(commands.Cog):
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot: commands.Bot = bot
+
+    # add a command to sync the command tree lcoally or globally
+    @bot.command()
+    @commands.is_owner()
+    async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: typing.Optional[typing.Literal["local", "global"]] = None) -> None:
+        if not guilds:
+            if spec == "local":
+                ctx.bot.tree.copy_global_to(guild=ctx.guild)
+                fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+                await ctx.send(f"The command tree has been locally copied.")
+            elif spec == "global":
+                fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+                await ctx.send(f"The command tree has been globally copied.")
+            else:
+                await ctx.send(f"Kindly select if you wish to sync the command tree *locally* or *globally* when running the command.")
+
+            return
+
 # create command cogs
+
+
 class test(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
 
-    @commands.hybrid_command(name="ping")
+    @commands.hybrid_command(name="syncwork")
     async def ping_command(self, ctx: commands.Context) -> None:
         """
         This command is actuallyfg used as an app command AND
