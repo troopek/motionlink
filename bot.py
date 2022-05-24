@@ -27,13 +27,17 @@ guild_test = discord.Object(978353904339288064)
 class Bot(commands.Bot):
     async def setup_hook(self):
         await bot.add_cog(Events(bot))  # Events
-        await bot.add_cog(test(bot))    # test
+        await bot.add_cog(Random(bot))    # Random
+        # await bot.add_cog(MyCog(bot))    # test
         tree = self.tree
         # await tree.sync(guild=discord.Object(976586132391338054))
         await tree.sync()
 
-        tree.copy_global_to(guild=guild_test)
-        await tree.sync(guild=guild_test)
+        # tree.copy_global_to(guild=guild_test)
+        # await tree.sync(guild=guild_test)
+
+        # tree.copy_global_to(guild=guild_cmg)
+        # await tree.sync(guild=guild_cmg)
 
 
 intents = discord.Intents.default()
@@ -45,6 +49,8 @@ bot = Bot(command_prefix=('!'), intents=intents,
 
 
 # create event cog
+
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -81,42 +87,27 @@ class Sync(commands.Cog):
 
             return
 
+
 # create command cogs
-
-
-class test(commands.Cog):
+class Random(commands.GroupCog, name="random"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
+        super().__init__()  # this is now required in this context.
 
-    @commands.hybrid_command(name="syncwork")
-    async def ping_command(self, ctx: commands.Context) -> None:
-        """
-        This command is actuallyfg used as an app command AND
-        """
+    @app_commands.command(name="coin")
+    async def coin(self, ctx) -> None:
+        await self.bot.wait_until_ready()
+        """ Flip a coin."""
+        sides = ["heads", "tails"]
+        choice = random.choice(sides)
+        await ctx.send(f"The coin landed on **{choice}**.")
 
-        await ctx.send("Hello!")
-        # we use ctx.send and this will handle both the message command and app command of sending.
-        # added note: you can check if this command is invoked as an app command by checking the `ctx.interaction` attribute.
-
-    @commands.hybrid_group(name="parent")
-    async def parent_command(self, ctx: commands.Context) -> None:
-        """
-        We even have the use of parents. This will work as us
-        """
-        ...   # nothing we want to do in here, I guess!
-
-    @parent_command.command(name="sub")
-    async def sub_command(self, ctx: commands.Context, argument: str) -> None:
-        """
-        This subcommand can now be invoked 
-        """
-
-        await ctx.send(f"Hello, you sent {argument}!")
-
-    @app_commands.command(name="command-1")
-    async def my_command(self, interaction: discord.Interaction) -> None:
-        """ djgasd ghasgd hasgd hagsd hags dhgas """
-        await interaction.response.send_message("Hello from command 1!", ephemeral=True)
+    @app_commands.command(name="dice")
+    async def dice(self, ctx) -> None:
+        await self.bot.wait_until_ready()
+        """ Roll a dice with six sides."""
+        choice = random.randrange(6)
+        await ctx.send(f"The dice landed on **{choice}**.")
 
 
 # run the bot
