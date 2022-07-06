@@ -4,3 +4,4 @@ pip install python-dotenv
 pip install discord
 pip install youtube_dl
 pip install translate
+pip install langdetect

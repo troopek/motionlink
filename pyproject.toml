@@ -7,8 +7,10 @@ authors = ["EugeneChicevic <<>>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 python-dotenv = "^0.20.0"
-discord = "^1.7.3"
 translate = "^3.6.1"
+textblob = "^0.17.1"
+discord = "^1.7.3"
+langdetect = "^1.0.9"
 
 [tool.poetry.dev-dependencies]
 

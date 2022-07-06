@@ -5,14 +5,19 @@ from discord import app_commands
 from discord.ext import commands
 import discord
 import typing
+
 from translate import Translator
+from langdetect import detect
+
+
 
 # import other neccesary libraies
 import random
 
 # initialize token
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+# TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.environ['TOKEN']
 
 # style stuff
 pri = '\033[0;0m'  # reset color
@@ -27,9 +32,10 @@ guild_test = discord.Object(978353904339288064)
 # initialize bot
 class Bot(commands.Bot):
     async def setup_hook(self):
-        await bot.add_cog(Events(bot))  # Events
+        await bot.add_cog(Events(bot))    # Events
         await bot.add_cog(Random(bot))    # Random
-        # await bot.add_cog(MyCog(bot))    # test
+        await bot.add_cog(Translate(bot)) # Translate
+        # await bot.add_cog(MyCog(bot))   # test
         tree = self.tree
         # await tree.sync(guild=discord.Object(976586132391338054))
         await tree.sync()
@@ -119,9 +125,14 @@ class Translate(commands.Cog):
   @app_commands.command(name="chinese")
   async def chinese(self, interaction: discord.Interaction, text: str) -> None:
     """ Translate english text into chinese. """
-    translator= Translator(from_lang="english",to_lang="chinese")
-    print(translation)
-    translation = translator.translate("Guten Morgen")
+    language = detect("text")
+    print(language)
+    if language == "en":
+      translator = Translator(from_lang="english", to_lang="chinese")
+    else:
+      translator = Translator(from_lang="chinese", to_lang="english")
+      
+    translation = translator.translate(text)
     await interaction.response.send_message(translation, ephemeral=True)
     
 
