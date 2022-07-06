@@ -5,6 +5,7 @@ from discord import app_commands
 from discord.ext import commands
 import discord
 import typing
+from translate import Translator
 
 # import other neccesary libraies
 import random
@@ -97,7 +98,7 @@ class Random(commands.GroupCog, name="random"):
     @app_commands.command(name="coin")
     async def coin(self, ctx) -> None:
         await self.bot.wait_until_ready()
-        """ Flip a coin."""
+        """ Flip a coin. """
         sides = ["heads", "tails"]
         choice = random.choice(sides)
         await ctx.send(f"The coin landed on **{choice}**.")
@@ -105,11 +106,32 @@ class Random(commands.GroupCog, name="random"):
     @app_commands.command(name="dice")
     async def dice(self, ctx) -> None:
         await self.bot.wait_until_ready()
-        """ Roll a dice with six sides."""
+        """ Roll a dice with six sides. """
         choice = random.randrange(6)
         await ctx.send(f"The dice landed on **{choice}**.")
 
 
+
+class Translate(commands.Cog):
+  def __init__(self, bot: commands.Bot) -> None:
+    self.bot = bot
+    
+  @app_commands.command(name="chinese")
+  async def chinese(self, interaction: discord.Interaction, text: str) -> None:
+    """ Translate english text into chinese. """
+    translator= Translator(from_lang="english",to_lang="chinese")
+    print(translation)
+    translation = translator.translate("Guten Morgen")
+    await interaction.response.send_message(translation, ephemeral=True)
+    
+
+
+
+
+
+
+
+      
 # run the bot
 bot.run(TOKEN)
 
